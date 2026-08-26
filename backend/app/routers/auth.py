@@ -10,7 +10,7 @@ router = APIRouter(prefix='/auth', tags=['auth'])
 @router.post(path='/register', status_code=status.HTTP_201_CREATED, response_model=dict[str, str])
 async def register_user(user: Register, db: AsyncSession = Depends(get_db)):
     """ Register User """
-    flag = await register_user_service(user.username, user.hashed_password, db)
+    flag = await register_user_service(user.username, user.password, user.contact_number, user.college, user.name, db)
     if(flag):
         return {"message": "User Registered Successfully"}
     else:

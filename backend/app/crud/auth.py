@@ -13,10 +13,10 @@ async def email_exist(email: str, db: AsyncSession) -> bool|None:
         return None
 
 
-async def add_user(username: str, hashed_password: str, db: AsyncSession) -> User:
+async def add_user(username: str, hashed_password: str, contact: str, college: str, name: str, db: AsyncSession) -> User:
     """ Add user to database """
     try:
-        new_user = User(username=username, hashed_password=hashed_password)
+        new_user = User(username=username, hashed_password=hashed_password, contact_number=contact, college=college, name=name)
         db.add(new_user)
         await db.commit()
         await db.refresh(new_user)

@@ -1,5 +1,6 @@
 from fastapi import FastAPI, status
 from contextlib import asynccontextmanager
+from app.routers import auth, product
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) :
@@ -9,6 +10,9 @@ async def lifespan(app: FastAPI) :
 
 
 app = FastAPI(lifespan = lifespan)
+
+app.include_router(auth.router)
+app.include_router(product.router)
 
 @app.get(path='/home', status_code = status.HTTP_200_OK, response_model=dict[str, str])
 async def home():

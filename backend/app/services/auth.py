@@ -8,6 +8,8 @@ from fastapi import HTTPException, status, Depends
 from fastapi.security import OAuth2PasswordBearer
 from app.crud.auth import email_exist, add_user, get_user_by_email, get_user, increment_token_version, change_password
 from sqlalchemy.ext.asyncio import AsyncSession
+
+
 OAuth = OAuth2PasswordBearer(tokenUrl='/auth/login')
 
 context = PasswordHash.recommended()
@@ -21,10 +23,10 @@ async def hash_password(password: str) -> str|None:
         return None
 
 
-async def verify_password(hashed_password, simple_password) -> bool:
+async def verify_password(simple_password, hashed_password) -> bool:
     """ Verify Password """
     try:
-        flag = await asyncio.to_thread(context.verify, hashed_password, simple_password)
+        flag = await asyncio.to_thread(context.verify, simple_password, hashed_password)
         return flag
     except Exception:
         return False
@@ -55,7 +57,7 @@ async def decode_jwt(token: str) -> dict:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error: {e}") from e
 
 
-async def register_user_service(username: str, password: str, db: AsyncSession) -> bool:
+async def register_user_service(username: str, password: str, contact: str, college: str, name: str, db: AsyncSession) -> bool:
     """ Register User """
     try:
         if await email_exist(username, db):
@@ -65,7 +67,7 @@ async def register_user_service(username: str, password: str, db: AsyncSession) 
         if not hashed_password:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error while hashing password")
         
-        user = await add_user(username, hashed_password, db)
+        user = await add_user(username, hashed_password, contact, college, name, db)
         return True
     except HTTPException as e:
         raise e
@@ -80,7 +82,7 @@ async def login_user_service(username: str, password: str, db: AsyncSession) -> 
         if not user:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User does not exist")
         
-        if not await verify_password(user.hashed_password, password):
+        if not await verify_password(password, user.hashed_password):
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Password")
         
         access_token = await encode_jwt({"username": user.username, "token_version": user.token_version, "type": "access"}, "access")
@@ -97,21 +99,22 @@ async def get_current_user(db: AsyncSession = Depends(get_db), token:str = Depen
     user = await get_user(payload["username"], payload["token_version"], db)
     if(not user):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized user")
+    return user
 
 
 async def refresh_token_service(token: str, db: AsyncSession):
     payload = await decode_jwt(token)
 
-    if(payload["type"]!="refresh"):
+    if payload.get("type") != "refresh":
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Token is not refresh Token")
-    
+
     user = await get_user(payload["username"], payload["token_version"], db)
 
-    if(not user):
+    if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized User")
 
-    access_token = encode_jwt({"username": user.name, "token_version": user.token_version, "type": "access"}, "access")
-    refresh_token = encode_jwt({"username": user.name, "token_version": user.token_version, "type": "refresh"}, "refresh")
+    access_token = await encode_jwt({"username": user.username, "token_version": user.token_version, "type": "access"}, "access")
+    refresh_token = await encode_jwt({"username": user.username, "token_version": user.token_version, "type": "refresh"}, "refresh")
     return {"access_token": access_token, "refresh_token": refresh_token}
 
 
@@ -123,7 +126,7 @@ async def logout_user_service(username: str, db: AsyncSession):
 
 
 async def change_password_service(username: str, old_password: str, new_password: str, hashed_password: str, db: AsyncSession):
-    if not await verify_password(hashed_password, old_password):
+    if not await verify_password(old_password, hashed_password):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Old Password Didn't match")
 
     new_hashed_password = await hash_password(new_password)
@@ -131,7 +134,6 @@ async def change_password_service(username: str, old_password: str, new_password
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error")
 
     try:
-        await change_password(username, new_password, db)
+        await change_password(username, new_hashed_password, db)
     except Exception as e:
-        raise e from e  
-    
+        raise e from e
