@@ -1,0 +1,70 @@
+@import url("https://fonts.googleapis.com/css2?family=Anton&family=Kalam:wght@400;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply font-body text-ink bg-paper antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-display tracking-wide;
+  }
+
+  :focus-visible {
+    outline: 3px solid theme("colors.tape.DEFAULT");
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* Corkboard textured background used behind the product board */
+  .corkboard {
+    background-color: theme("colors.cork.DEFAULT");
+    background-image: radial-gradient(
+        rgba(0, 0, 0, 0.18) 1px,
+        transparent 1px
+      ),
+      radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+    background-size: 22px 22px, 16px 16px;
+    background-position: 0 0, 8px 8px;
+  }
+
+  /* Push-pin marker shown above pinned cards */
+  .pin-dot {
+    @apply absolute -top-3 left-1/2 -translate-x-1/2 w-5 h-5 rounded-full shadow-pin;
+    background: radial-gradient(circle at 35% 30%, #ff8a73, theme("colors.pin.dark") 70%);
+  }
+
+  /* Dashed tear line used on the contact tab of product cards */
+  .tear-line {
+    background-image: repeating-linear-gradient(
+      to right,
+      theme("colors.ink.DEFAULT") 0,
+      theme("colors.ink.DEFAULT") 6px,
+      transparent 6px,
+      transparent 12px
+    );
+    height: 1px;
+    opacity: 0.35;
+  }
+}
