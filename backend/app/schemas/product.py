@@ -8,6 +8,7 @@ from datetime import datetime
 class ProductResponse(BaseModel):
     id: uuid.UUID
     seller_id: uuid.UUID
+    seller_contact_number: str
     title: str
     image_url: str
     image_public_id: str

@@ -1,6 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.db_models import Product
 from sqlalchemy import func, select, update
+from sqlalchemy.orm import selectinload
 from fastapi import HTTPException, status
 import uuid
 import logging
@@ -25,7 +26,13 @@ async def get_product_crud(db: AsyncSession, page: int):
 
     offset = (page-1)*14
 
-    result = await db.execute(select(Product).where(Product.is_active==True).offset(offset).limit(14))
+    result = await db.execute(
+        select(Product)
+        .options(selectinload(Product.seller))
+        .where(Product.is_active == True)
+        .offset(offset)
+        .limit(14)
+    )
     data = result.scalars().all()
 
     return {
@@ -33,7 +40,17 @@ async def get_product_crud(db: AsyncSession, page: int):
         "total_pages": total_pages,
         "has_previous": True if (page != 1) else False,
         "has_next": True if (page != total_pages) else False,
-        "data": data
+        "data": [{
+            "id": row.id,
+            "seller_id": row.seller_id,
+            "seller_contact_number": row.seller.contact_number,
+            "title": row.title,
+            "image_url": row.image_url,
+            "image_public_id": row.image_public_id,
+            "price": row.price,
+            "description": row.description,
+            "created_at": row.created_at,
+        } for row in data]
     }
 
 
@@ -54,7 +71,13 @@ async def get_my_product_crud(db: AsyncSession, page: int, id: uuid.UUID):
 
     offset = (page-1)*14
 
-    result = await db.execute(select(Product).where(Product.is_active==True, Product.seller_id==id).offset(offset).limit(14))
+    result = await db.execute(
+        select(Product)
+        .options(selectinload(Product.seller))
+        .where(Product.is_active == True, Product.seller_id == id)
+        .offset(offset)
+        .limit(14)
+    )
     data = result.scalars().all()
 
     return {
@@ -62,7 +85,17 @@ async def get_my_product_crud(db: AsyncSession, page: int, id: uuid.UUID):
         "total_pages": total_pages,
         "has_previous": True if (page != 1) else False,
         "has_next": True if (page != total_pages) else False,
-        "data": data
+        "data": [{
+            "id": row.id,
+            "seller_id": row.seller_id,
+            "seller_contact_number": row.seller.contact_number,
+            "title": row.title,
+            "image_url": row.image_url,
+            "image_public_id": row.image_public_id,
+            "price": row.price,
+            "description": row.description,
+            "created_at": row.created_at,
+        } for row in data]
     }
 
 
@@ -87,7 +120,18 @@ async def add_product_crud(db: AsyncSession, title: str, seller_id: uuid.UUID, i
         db.add(product)
         await db.commit()
         await db.refresh(product)
-        return product
+        await db.refresh(product, ["seller"])
+        return {
+            "id": product.id,
+            "seller_id": product.seller_id,
+            "seller_contact_number": product.seller.contact_number,
+            "title": product.title,
+            "image_url": product.image_url,
+            "image_public_id": product.image_public_id,
+            "price": product.price,
+            "description": product.description,
+            "created_at": product.created_at,
+        }
     except Exception as e:
         await db.rollback()
         logger.exception("Failed to add product")

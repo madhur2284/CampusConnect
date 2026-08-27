@@ -16,6 +16,7 @@ class Setting(BaseSettings):
     CLOUDINARY_CLOUD_NAME: str
     CLOUDINARY_API_KEY: int
     CLOUDINARY_API_SECRET: str
+    CORS_ORIGINS: str = "http://localhost:5173"
     model_config = SettingsConfigDict(env_file=ENV_FILE)
 
 
