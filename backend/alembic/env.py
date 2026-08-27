@@ -1,11 +1,10 @@
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy import pool
 from app.core.database import Base
 import app.models.db_models
-from app.core.config import settings
+from app.core.config import database_connection_options
 from alembic import context
 import asyncio
 
@@ -42,7 +41,8 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    url = config.get_main_option("sqlalchemy.url", settings().DATABASE_URL.replace("%", "%%"))
+    database_url, _ = database_connection_options()
+    url = str(database_url).replace("%", "%%")
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -67,9 +67,11 @@ def do_run_migrations(connection):
 async def run_migrations_online():
     """Async migration runner"""
 
+    database_url, connect_args = database_connection_options()
     connectable = create_async_engine(
-        settings().DATABASE_URL,
+        database_url,
         poolclass=pool.NullPool,
+        connect_args=connect_args,
     )
 
     async with connectable.connect() as connection:

@@ -1,11 +1,13 @@
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import AsyncAdaptedQueuePool
-from app.core.config import settings
+from app.core.config import database_connection_options
 
+
+database_url, connect_args = database_connection_options()
 
 engine = create_async_engine(
-    settings().DATABASE_URL,
+    database_url,
     poolclass =  AsyncAdaptedQueuePool,
     pool_size = 10,
     max_overflow = 10,
@@ -14,7 +16,7 @@ engine = create_async_engine(
     pool_pre_ping = True,
     echo=False,
     future=True,
-    connect_args={"ssl": "require"},
+    connect_args=connect_args,
 )
 
 Base = declarative_base()
