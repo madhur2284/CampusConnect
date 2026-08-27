@@ -86,7 +86,7 @@ export default function RegisterForm() {
       <Input
         id="name"
         label="Full name"
-        placeholder="e.g. Rahul Goyal"
+        placeholder="e.g. Madhur Gupta"
         value={form.name}
         onChange={handleChange("name")}
         error={errors.name}
@@ -96,7 +96,7 @@ export default function RegisterForm() {
         label="Email"
         type="email"
         autoComplete="email"
-        placeholder="rahul@gmail.com"
+        placeholder="madhur@gmail.com"
         value={form.username}
         onChange={handleChange("username")}
         error={errors.username}

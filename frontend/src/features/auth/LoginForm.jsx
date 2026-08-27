@@ -54,7 +54,7 @@ export default function LoginForm() {
         label="Email"
         type="email"
         autoComplete="email"
-        placeholder="rahul@gmail.com"
+        placeholder="madhur@gmail.com"
         value={form.username}
         onChange={handleChange("username")}
         error={errors.username}

@@ -4,7 +4,7 @@ import { useState } from "react";
 const CREATORS = [
   {
     name: "Rahul Goyal",
-    role: "MERN Stack Gen AI Developer",
+    role: "Frontend Developer",
     photo: "/creators/rahul.jpg",
     linkedin: "https://www.linkedin.com/in/rahulgoyal83789",
     github: "https://github.com/rahulgoyal83789",
@@ -12,7 +12,7 @@ const CREATORS = [
   },
   {
     name: "Madhur Gupta",
-    role: "Python Gen AI Developer",
+    role: "Backend Developer",
     photo: "/creators/madhur.jpg",
     linkedin: "https://www.linkedin.com/in/madhur-gupta-881535308/",
     github: "https://github.com/madhur2284",
