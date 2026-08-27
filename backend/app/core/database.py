@@ -13,8 +13,8 @@ engine = create_async_engine(
     pool_recycle = 1800,
     pool_pre_ping = True,
     echo=False,
-    future=True
-    connect_args={"ssl": "require"}   
+    future=True,
+    connect_args={"ssl": "require"},
 )
 
 Base = declarative_base()
