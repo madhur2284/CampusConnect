@@ -30,6 +30,11 @@ class Product(Base):
     price: Mapped[int] = mapped_column(Integer, nullable=False)
     description: Mapped[str] = mapped_column(Text, nullable=True, default="")
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        nullable=False,
+        default=datetime.utcnow,
+        server_default=func.now(),
+    )
 
     seller: Mapped["User"] = relationship(back_populates='items')

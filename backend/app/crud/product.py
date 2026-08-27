@@ -3,6 +3,9 @@ from app.models.db_models import Product
 from sqlalchemy import func, select, update
 from fastapi import HTTPException, status
 import uuid
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 async def get_product_crud(db: AsyncSession, page: int):
@@ -86,4 +89,6 @@ async def add_product_crud(db: AsyncSession, title: str, seller_id: uuid.UUID, i
         await db.refresh(product)
         return product
     except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error while adding product")
+        await db.rollback()
+        logger.exception("Failed to add product")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error while adding product") from e

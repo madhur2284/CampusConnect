@@ -1,5 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.crud.product import get_product_crud, get_my_product_crud, delete_product_crud, add_product_crud
+from app.core.cloudinary_config import cloudinary
 import uuid
 import cloudinary.uploader
 from fastapi import UploadFile, HTTPException, status

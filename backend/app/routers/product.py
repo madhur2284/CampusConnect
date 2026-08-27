@@ -25,7 +25,7 @@ async def add_product(product: AddProduct = Depends(AddProduct.form_data), image
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error while creating image url")
 
     try:
-        data = add_product_service(db, product.title, user.id, result["image"], result["image_public_id"], product.price, product.description)
+        data = await add_product_service(db, product.title, user.id, result["image_url"], result["image_public_id"], product.price, product.description)
         return data
     except Exception as e:
         raise e from e
