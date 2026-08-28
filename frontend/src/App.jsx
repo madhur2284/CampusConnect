@@ -8,6 +8,7 @@ import SellPage from "./pages/SellPage";
 import MyListingsPage from "./pages/MyListingsPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import ProtectedRoute from "./features/auth/ProtectedRoute";
+import { Analytics } from "@vercel/analytics/react";
 
 export default function App() {
   return (
@@ -38,6 +39,7 @@ export default function App() {
         </Routes>
       </main>
       <Footer />
+      <Analytics />
     </div>
   );
 }
