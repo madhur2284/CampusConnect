@@ -2,10 +2,8 @@ import { formatPrice } from "../../utils/validators";
 
 const ROTATIONS = ["-rotate-2", "rotate-1.5", "-rotate-1.5", "rotate-2.5", "-rotate-2.5", "rotate-1"];
 
-// The backend's ProductResponse currently only sends `seller_id`, not the
-// seller's contact number. This reads either shape so the WhatsApp button
-// lights up automatically the day the backend adds `seller_contact_number`
-// (or a nested `seller.contact_number`) to that response.
+// Read either shape so the WhatsApp button also works with nested seller data
+// from older or alternate product response formats.
 function getSellerContact(product) {
   return product.seller_contact_number || product.seller?.contact_number || null;
 }
@@ -40,6 +38,16 @@ export default function ProductCard({ product, index = 0, actions = null }) {
           <h3 className="font-display text-lg leading-tight text-ink line-clamp-1">
             {product.title}
           </h3>
+          <div className="mt-1 border-t border-ink/10 pt-1.5 text-sm text-ink-soft">
+            <p>
+              <span className="font-semibold text-ink">Seller:</span>{" "}
+              {product.seller_name || "Unknown seller"}
+            </p>
+            <p className="line-clamp-1">
+              <span className="font-semibold text-ink">College:</span>{" "}
+              {product.seller_college || "College not available"}
+            </p>
+          </div>
           {product.description && (
             <p className="text-sm text-ink-soft line-clamp-2">
               {product.description}

@@ -11,12 +11,10 @@ import apiClient from "../../lib/apiClient";
  * - DELETE /product/items/{product_id} (auth) -> 204 No Content
  *
  * Product shape returned by the backend:
- *   { id, seller_id, title, image_url, image_public_id, price, description, created_at }
- * NOTE: the backend does not currently return the seller's contact number on a
- * product (only seller_id). The WhatsApp button in ProductCard degrades
- * gracefully if `seller_contact_number` / `seller.contact_number` is absent —
- * ask the backend to join that field onto ProductResponse to fully light up
- * the "message the owner" flow from the public feed.
+ *   {
+ *     id, seller_id, seller_contact_number, seller_name, seller_college,
+ *     title, image_url, image_public_id, price, description, created_at
+ *   }
  */
 
 export const fetchProducts = async (page = 1) => {

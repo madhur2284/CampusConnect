@@ -64,7 +64,7 @@ Run the backend first (see the backend README) — the frontend expects it at
 - `GET /product/items/me?page=<n>` — auth required, same paginated shape, only the caller's own listings
 - `DELETE /product/items/{id}` — auth required, soft-deletes (`is_active = false`)
 
-`Product` shape: `{ id, seller_id, title, image_url, image_public_id, price, description, created_at }`
+`Product` shape: `{ id, seller_id, seller_contact_number, seller_name, seller_college, title, image_url, image_public_id, price, description, created_at }`
 
 
 Everything else (register, login, refresh, logout, browsing, posting an item
