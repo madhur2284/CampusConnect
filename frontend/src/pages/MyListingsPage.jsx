@@ -4,17 +4,12 @@ import ProductGrid from "../features/products/ProductGrid";
 import Spinner from "../components/Spinner";
 import Banner from "../components/Banner";
 import Button from "../components/Button";
-import Pagination from "../components/Pagination";
 
 export default function MyListingsPage() {
   const {
     products,
-    pageNumber,
-    totalPages,
-    hasPrevious,
-    hasNext,
-    setPage,
     loading,
+    loadingMore,
     error,
     deletingId,
     removeProduct,
@@ -62,14 +57,11 @@ export default function MyListingsPage() {
                 </Button>
               )}
             />
-            <Pagination
-              pageNumber={pageNumber}
-              totalPages={totalPages}
-              hasPrevious={hasPrevious}
-              hasNext={hasNext}
-              onPageChange={setPage}
-              className="mt-12"
-            />
+            {loadingMore && (
+              <div className="mt-8">
+                <Spinner label="Loading more listings" />
+              </div>
+            )}
           </>
         )}
       </div>

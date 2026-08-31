@@ -4,21 +4,10 @@ import ProductGrid from "../features/products/ProductGrid";
 import Spinner from "../components/Spinner";
 import Banner from "../components/Banner";
 import Button from "../components/Button";
-import Pagination from "../components/Pagination";
 import { useAuth } from "../features/auth/useAuth";
 
 export default function ProductsPage() {
-  const {
-    products,
-    pageNumber,
-    totalPages,
-    hasPrevious,
-    hasNext,
-    setPage,
-    loading,
-    error,
-    reload,
-  } = useProducts(1);
+  const { products, loading, loadingMore, error, reload } = useProducts(1);
   const { isAuthenticated } = useAuth();
 
   return (
@@ -62,14 +51,11 @@ export default function ProductsPage() {
           !error && (
             <>
               <ProductGrid products={products} />
-              <Pagination
-                pageNumber={pageNumber}
-                totalPages={totalPages}
-                hasPrevious={hasPrevious}
-                hasNext={hasNext}
-                onPageChange={setPage}
-                className="mt-12"
-              />
+              {loadingMore && (
+                <div className="mt-8">
+                  <Spinner label="Loading more listings" />
+                </div>
+              )}
             </>
           )
         )}
